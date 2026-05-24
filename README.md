@@ -32,7 +32,7 @@ A free, lightweight Firefox extension that saves your open tabs into labeled fol
 All data is stored locally in your browser using the browser's storage API. Your tabs are never sent to any external server.
 
 ## Support
-Tab Saver is free with no ads or tracking. If it saved you some time, you can [buy me a coffee](https://buymeacoffee.com/markterry) to support continued development.
+Tab Saver is free with no ads or tracking. If it saved you some time, you can [buy me a coffee](https://buymeacoffee.com/markterry), as a tip to support continued development.
 
 ## License
 MIT License — free to use, modify, and distribute.
