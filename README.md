@@ -17,11 +17,6 @@ A free, lightweight Firefox extension that saves your open tabs into labeled fol
 4. Select any file inside the extension folder (e.g., `manifest.json`)
 5. The extension will be loaded until you restart Firefox
 
-### Permanent Installation
-To install permanently, the extension needs to be signed by Mozilla:
-1. Create an account at [addons.mozilla.org](https://addons.mozilla.org)
-2. Submit the extension for signing (you can keep it unlisted/private)
-3. Download the signed .xpi file and drag it into Firefox
 
 *(A public listing on the Firefox Add-ons store is currently pending review — a direct install link will be added here once approved.)*
 
