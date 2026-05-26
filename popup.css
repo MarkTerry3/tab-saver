@@ -177,6 +177,22 @@ body {
   transform: translateY(0);
 }
 
+.btn-secondary {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
 .btn-full {
   width: 100%;
   margin: 16px 18px;

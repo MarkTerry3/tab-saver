@@ -20,6 +20,7 @@ class TabSaver {
     this.tabsListEl = document.getElementById('tabsList');
     this.backBtn = document.getElementById('backBtn');
     this.openAllBtn = document.getElementById('openAllBtn');
+    this.exportCsvBtn = document.getElementById('exportCsvBtn');
     this.deleteFolderBtn = document.getElementById('deleteFolder');
     this.renameBtn = document.getElementById('renameBtn');
     this.themeToggle = document.getElementById('themeToggle');
@@ -49,6 +50,9 @@ class TabSaver {
     
     // Open all tabs
     this.openAllBtn.addEventListener('click', () => this.openAllTabs());
+    
+    // Export to CSV
+    this.exportCsvBtn.addEventListener('click', () => this.exportToCsv());
     
     // Delete folder
     this.deleteFolderBtn.addEventListener('click', () => this.deleteCurrentFolder());
@@ -401,6 +405,41 @@ class TabSaver {
       action: 'openAllTabs',
       urls: urls
     });
+  }
+  
+  exportToCsv() {
+    const folder = this.folders.find(f => f.id === this.currentFolderId);
+    if (!folder || folder.tabs.length === 0) {
+      this.showToast('No tabs to export', 'error');
+      return;
+    }
+    
+    // Escape a value per RFC 4180: wrap in quotes, double any internal quotes
+    const esc = (val) => '"' + (val ?? '').toString().replace(/"/g, '""') + '"';
+    
+    const rows = [['Title', 'URL']];
+    folder.tabs.forEach(tab => {
+      rows.push([tab.title || '', tab.url || '']);
+    });
+    
+    // CRLF line endings + UTF-8 BOM so Excel opens it cleanly
+    const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    // Sanitize folder name for use as a filename
+    const safeName = (folder.name || 'tabs').replace(/[^a-z0-9\-_]+/gi, '_');
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeName}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Delay revoke so Firefox doesn't cancel the download mid-flight
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    
+    this.showToast(`Exported ${folder.tabs.length} tab${folder.tabs.length !== 1 ? 's' : ''} to CSV`);
   }
   
   async deleteCurrentFolder() {
