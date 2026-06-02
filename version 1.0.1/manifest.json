@@ -1,7 +1,7 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Tab Saver",
-  "version": "1.0.2",
+  "version": "1.0.1",
   "description": "Save your open tabs into labeled folders and restore them anytime",
   "permissions": [
     "tabs",

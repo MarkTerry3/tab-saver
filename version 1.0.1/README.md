@@ -6,7 +6,6 @@ A free, lightweight Firefox extension that saves your open tabs into labeled fol
 - **Save all open tabs** with a custom session name
 - **Organize sessions** - view all your saved tab collections
 - **Restore sessions** - open all tabs from a session in a new window
-- **Add open tabs** - merge your currently open tabs into an existing session (skips ones already saved)
 - **Manage tabs** - click to open individual tabs, or remove unwanted ones
 - **Delete sessions** - remove entire sessions when no longer needed
 
@@ -25,10 +24,9 @@ A free, lightweight Firefox extension that saves your open tabs into labeled fol
 1. **Save tabs**: Enter a session name and click "Save Tabs" to save all your current tabs
 2. **View sessions**: Click on any saved session to see its tabs
 3. **Open all tabs**: Click "Open All in New Window" to restore the entire session
-4. **Add open tabs**: Inside a session, click "Add Open Tabs" to fold your currently open tabs into it (the button is disabled when there's nothing new to add)
-5. **Open single tab**: Click on any tab to open it in a new tab
-6. **Remove tabs**: Hover over a tab and click the X to remove it from the session
-7. **Delete session**: Click the trash icon in the session detail view
+4. **Open single tab**: Click on any tab to open it in a new tab
+5. **Remove tabs**: Hover over a tab and click the X to remove it from the session
+6. **Delete session**: Click the trash icon in the session detail view
 
 ## Data Storage
 All data is stored locally in your browser using the browser's storage API. Your tabs are never sent to any external server.

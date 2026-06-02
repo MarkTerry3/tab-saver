@@ -20,7 +20,6 @@ class TabSaver {
     this.tabsListEl = document.getElementById('tabsList');
     this.backBtn = document.getElementById('backBtn');
     this.openAllBtn = document.getElementById('openAllBtn');
-    this.addTabsBtn = document.getElementById('addTabsBtn');
     this.exportCsvBtn = document.getElementById('exportCsvBtn');
     this.deleteFolderBtn = document.getElementById('deleteFolder');
     this.renameBtn = document.getElementById('renameBtn');
@@ -51,9 +50,6 @@ class TabSaver {
     
     // Open all tabs
     this.openAllBtn.addEventListener('click', () => this.openAllTabs());
-    
-    // Add open tabs to current session
-    this.addTabsBtn.addEventListener('click', () => this.confirmAddOpenTabs());
     
     // Export to CSV
     this.exportCsvBtn.addEventListener('click', () => this.exportToCsv());
@@ -272,7 +268,7 @@ class TabSaver {
     this.showToast('Session reordered');
   }
   
-  async showFolderDetail(folderId) {
+  showFolderDetail(folderId) {
     const folder = this.folders.find(f => f.id === folderId);
     if (!folder) return;
     
@@ -283,8 +279,6 @@ class TabSaver {
     
     this.mainContainer.style.display = 'none';
     this.detailView.style.display = 'flex';
-    
-    await this.updateAddTabsButton(folder);
   }
   
   showMainView() {
@@ -411,75 +405,6 @@ class TabSaver {
       action: 'openAllTabs',
       urls: urls
     });
-  }
-  
-  // Returns open tabs in the current window that aren't already in the folder.
-  // Dedupes by URL (against the folder and among the open tabs) and skips
-  // blank / new-tab pages, which are never worth saving.
-  async getNewOpenTabs(folder) {
-    const openTabs = await browserAPI.tabs.query({ currentWindow: true });
-    const existingUrls = new Set(folder.tabs.map(t => t.url));
-    const blankPages = ['about:blank', 'about:newtab', 'about:home'];
-    const seen = new Set();
-    const newTabs = [];
-    
-    for (const tab of openTabs) {
-      const url = tab.url;
-      if (!url || blankPages.includes(url)) continue;
-      if (existingUrls.has(url) || seen.has(url)) continue;
-      seen.add(url);
-      newTabs.push(tab);
-    }
-    
-    return newTabs;
-  }
-  
-  async updateAddTabsButton(folder) {
-    const newTabs = await this.getNewOpenTabs(folder);
-    const count = newTabs.length;
-    
-    this.addTabsBtn.disabled = count === 0;
-    this.addTabsBtn.title = count === 0
-      ? 'No new tabs open to add'
-      : `Add ${count} open tab${count !== 1 ? 's' : ''} not already saved`;
-  }
-  
-  async confirmAddOpenTabs() {
-    const folder = this.folders.find(f => f.id === this.currentFolderId);
-    if (!folder) return;
-    
-    const newTabs = await this.getNewOpenTabs(folder);
-    
-    if (newTabs.length === 0) {
-      this.showToast('No new tabs to add', 'error');
-      await this.updateAddTabsButton(folder);
-      return;
-    }
-    
-    const count = newTabs.length;
-    if (confirm(`Add ${count} new tab${count !== 1 ? 's' : ''} to "${folder.name}"?`)) {
-      await this.addOpenTabs(newTabs);
-    }
-  }
-  
-  async addOpenTabs(newTabs) {
-    const folderIndex = this.folders.findIndex(f => f.id === this.currentFolderId);
-    if (folderIndex === -1) return;
-    
-    const folder = this.folders[folderIndex];
-    const mapped = newTabs.map(tab => ({
-      id: tab.id,
-      title: tab.title || 'Untitled',
-      url: tab.url,
-      favIconUrl: tab.favIconUrl || null
-    }));
-    
-    folder.tabs.push(...mapped);
-    await this.saveFolders();
-    
-    this.renderTabs(folder.tabs);
-    await this.updateAddTabsButton(folder);
-    this.showToast(`Added ${mapped.length} tab${mapped.length !== 1 ? 's' : ''}`);
   }
   
   exportToCsv() {

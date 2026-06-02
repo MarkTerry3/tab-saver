@@ -193,18 +193,6 @@ body {
   transform: translateY(0);
 }
 
-.btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn:disabled:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border);
-  transform: none;
-}
-
 .btn-full {
   width: 100%;
   margin: 16px 18px;
