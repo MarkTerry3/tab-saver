@@ -16,7 +16,8 @@ browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Create window with first URL
     browserAPI.windows.create({
       url: urls[0],
-      focused: true
+      focused: true,
+      incognito: !!message.incognito
     }).then((newWindow) => {
       // Open remaining tabs
       for (let i = 1; i < urls.length; i++) {
@@ -26,9 +27,22 @@ browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
           active: false
         });
       }
+      sendResponse({ success: true });
+    }).catch((err) => {
+      // Most common cause: extension not allowed in private/incognito windows.
+      // Firefox: about:addons -> Tab Saver -> Run in Private Windows
+      // Chrome: extension details -> Allow in Incognito
+      if (message.incognito) {
+        const isFirefox = typeof browser !== 'undefined';
+        const setting = isFirefox ? '"Run in Private Windows"' : '"Allow in Incognito"';
+        sendResponse({
+          success: false,
+          error: `Enable ${setting} for Tab Saver in your browser's extension settings`
+        });
+      } else {
+        sendResponse({ success: false, error: err.message });
+      }
     });
-    
-    sendResponse({ success: true });
   }
   
   return true; // Keep message channel open for async response

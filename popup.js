@@ -20,6 +20,7 @@ class TabSaver {
     this.tabsListEl = document.getElementById('tabsList');
     this.backBtn = document.getElementById('backBtn');
     this.openAllBtn = document.getElementById('openAllBtn');
+    this.openAllPrivateBtn = document.getElementById('openAllPrivateBtn');
     this.addTabsBtn = document.getElementById('addTabsBtn');
     this.exportCsvBtn = document.getElementById('exportCsvBtn');
     this.deleteFolderBtn = document.getElementById('deleteFolder');
@@ -51,6 +52,9 @@ class TabSaver {
     
     // Open all tabs
     this.openAllBtn.addEventListener('click', () => this.openAllTabs());
+    
+    // Open all tabs in a private window
+    this.openAllPrivateBtn.addEventListener('click', () => this.openAllTabs(true));
     
     // Add open tabs to current session
     this.addTabsBtn.addEventListener('click', () => this.confirmAddOpenTabs());
@@ -387,7 +391,7 @@ class TabSaver {
     this.showToast(`Removed tab`);
   }
   
-  async openAllTabs() {
+  async openAllTabs(incognito = false) {
     const folder = this.folders.find(f => f.id === this.currentFolderId);
     if (!folder || folder.tabs.length === 0) return;
     
@@ -406,11 +410,20 @@ class TabSaver {
       return;
     }
     
-    // Send to background script which persists after popup closes
-    browserAPI.runtime.sendMessage({
+    // Send to background script which persists after popup closes.
+    // Promise form works on Firefox (browser.*) and Chrome MV3.
+    const result = browserAPI.runtime.sendMessage({
       action: 'openAllTabs',
-      urls: urls
+      urls: urls,
+      incognito: incognito
     });
+    if (result && typeof result.then === 'function') {
+      result.then((response) => {
+        if (response && !response.success && response.error) {
+          this.showToast(response.error, 'error');
+        }
+      }).catch(() => {});
+    }
   }
   
   // Returns open tabs in the current window that aren't already in the folder.
